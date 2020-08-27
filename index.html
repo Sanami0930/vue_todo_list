@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Vue.js App</title>
+  <link rel="stylesheet" href="main.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+    <div id="app" v-cloak>
+        <v-app id="inspire">
+            <div style="margin-bottom: 20px;" >
+                <v-app-bar class="mx-auto" color="teal darken-1" dense dark>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-title>{{ appName }}</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                </v-app-bar>
+            </div>
+
+            <div>
+                <!-- タスクの絞り込み -->
+                <label v-for="label in options">
+                    <input type="radio" v-model="current" v-bind:value="label.value">{{ label.label }}
+                </label>
+                <br>
+                <p>{{ computedTodos.length }} 件を表示中</p>
+            </div>
+
+            <!-- 新しいタスクを追加する -->
+            <div style="margin-bottom: 20px;">
+                <v-btn color = "teal lighten-4" @click ="addConfirm">新しいタスクを追加する</v-btn>
+                <v-dialog v-model="addDialog" max-width="500">
+                    <v-card>
+                        <v-card-title class="headline">新しいタスクを追加</v-card-title>
+                        <v-form ref="form" @submit.stop.prevent="doAdd">
+                            <v-container>
+                                <v-text-field
+                                    v-model = "task"
+                                    :rules="rules"
+                                    :counter="25"
+                                    label="タスク名"
+                                    hint ="最大25文字入力できます。"
+                                    placeholder ="タスク名を入力してください。"
+                                    autofocus
+                                    @keyup.native.enter="task && submit(doAdd)"
+                                >
+                                </v-text-field>
+                            </v-container>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="green darken-1" text @click="addDialog = false">キャンセル</v-btn>
+                                <v-btn type="submit" color="primary" @click="doAdd">追加</v-btn>
+                            </v-card-actions>
+                        </v-form>
+                    </v-card>
+                </v-dialog>
+            </div>
+
+            <div>
+                <!-- ToDo テーブル -->
+                <table>
+                    <!-- テーブルヘッダ -->
+                    <thread>
+                        <tr>
+                            <th class="id">ID</th>
+                            <th class="comment">タスク名</th>
+                            <th class="state">状態</th>
+                            <th class="button"></th>
+                        </tr>
+                    </thread>
+                    <tbody>
+                        <tr v-for="item in computedTodos" v-bind:key="item.id">
+                            <!-- 要素の情報 -->
+                            <th>{{ item.id + 1 }}</th>
+                            <td>{{ item.comment }}</td>
+                            <td class="state">
+                                <!-- 状態変更ボタン -->
+                                <v-chip
+                                    :color = "(item.state === 0)? 'primary' : 'success'"
+                                    @click="doChangeState(item)"
+                                    >
+                                    {{ labels[item.state] }}
+                                </v-chip>
+                            </td>
+                            <td class="button">
+                                <v-btn color = "error" @click="deleteConfirm(item.id)">削除</v-btn>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <v-dialog v-model="deleteDialog" max-width="350">
+                    <v-card>
+                        <v-card-title class="headline">タスクの削除確認</v-card-title>
+                        <v-card-text>タスクを削除してもよろしいですか？</v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="green darken-1" text @click="deleteDialog = false">キャンセル</v-btn>
+                            <v-btn color="red darken-1" text @click="doRemove(deleteID)">削除</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+            </div>
+
+        </v-app>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
