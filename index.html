@@ -15,7 +15,7 @@
             <div style="margin-bottom: 20px;" >
                 <v-app-bar class="mx-auto" color="teal darken-1" dense dark>
                     <v-spacer></v-spacer>
-                    <v-toolbar-title>{{ appName }}</v-toolbar-title>
+                        <v-toolbar-title>{{ appName }}</v-toolbar-title>
                     <v-spacer></v-spacer>
                 </v-app-bar>
             </div>
@@ -30,7 +30,7 @@
             </div>
 
             <!-- 新しいタスクを追加する -->
-            <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 40px;">
                 <v-btn color = "teal lighten-4" @click ="addConfirm">新しいタスクを追加する</v-btn>
                 <v-dialog v-model="addDialog" max-width="500">
                     <v-card>
@@ -86,28 +86,59 @@
                                 </v-chip>
                             </td>
                             <td class="button">
-                                <v-btn color = "error" @click="deleteConfirm(item.id)">削除</v-btn>
+                                <v-icon @click="editConfirm(item.id)">mdi-pencil</v-icon>
+                                <v-icon @click="deleteConfirm(item.id)">mdi-delete</v-icon>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <v-dialog v-model="deleteDialog" max-width="350">
-                    <v-card>
-                        <v-card-title class="headline">タスクの削除確認</v-card-title>
-                        <v-card-text>タスクを削除してもよろしいですか？</v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="green darken-1" text @click="deleteDialog = false">キャンセル</v-btn>
-                            <v-btn color="red darken-1" text @click="doRemove(deleteID)">削除</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
             </div>
 
+            <v-dialog v-model="editDialog" max-width="500">
+                <v-card>
+                    <v-card-title class="headline">タスクの編集</v-card-title>
+                    <v-form ref="form" @submit.stop.prevent="doUpdate(itemID)">
+                        <v-container>
+                            <v-text-field
+                                v-model = "task"
+                                :rules="rules"
+                                :counter="25"
+                                label="タスク名"
+                                hint ="最大25文字入力できます。"
+                                placeholder ="タスク名を入力してください。"
+                                autofocus
+                            >
+                            </v-text-field>
+                        </v-container>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="green darken-1" text @click="editDialog = false">キャンセル</v-btn>
+                            <v-btn type="submit" color="primary" @click="doUpdate(itemID)">更新</v-btn>
+                        </v-card-actions>
+                    </v-form>
+                </v-card>
+            </v-dialog>
+
+            <v-dialog v-model="deleteDialog" max-width="350">
+                <v-card>
+                    <v-card-title class="headline">タスクの削除確認</v-card-title>
+                    <v-card-text>タスクを削除してもよろしいですか？</v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="green darken-1" text @click="deleteDialog = false">キャンセル</v-btn>
+                        <v-btn color="error" @click="doRemove(itemID)">削除</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <v-snackbar v-model="snackbar" :timeout="timeout">
+                {{ snackbar_text }}
+            </v-snackbar>
         </v-app>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet"></script>
     <script src="main.js"></script>
 </body>
 </html>

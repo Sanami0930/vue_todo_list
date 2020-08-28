@@ -25,10 +25,23 @@ const app = new Vue({
         return{
             appName: 'ToDo LIST',
 
-            addDialog: false,
+            drawer: true,
+            drawer_menu: [
+                { title: 'Home', icon: 'mdi-home-city' },
+                { title: 'My Account', icon: 'mdi-account' },
+                { title: 'Users', icon: 'mdi-account-group-outline' },
+            ],
 
+            // ダイアログ表示フラグ
+            addDialog: false,
+            editDialog: false,
             deleteDialog: false,
-            deleteID: null,
+            itemID: null,
+
+            // スナックバーの表示フラグ
+            snackbar: false,
+            snackbar_text: '',
+            timeout: 3000,
 
             // 使用するデータ
             todos:[],
@@ -44,6 +57,7 @@ const app = new Vue({
             current: -1,
 
             task: '',
+            editTask: '',
             rules: [v => v.length <= 25 || '入力可能な文字数は最大25文字までです。'],
         }
     },
@@ -94,12 +108,10 @@ const app = new Vue({
 
         // ToDo 追加の処理
         doAdd(){
-
             // 入力がなければ何もしないで return
             if(!this.task.length){
                 return
             }
-
             // { 新しいID, タスク名, 作業状態 }
             // というオブジェクトを現在の todos リストへ push
             // 作業状態「state」は、デフォルト「作業中=0」で作成
@@ -109,29 +121,54 @@ const app = new Vue({
                 state: 0
             })
 
+            const text = "新しいタスクを追加しました。"
+            this.displaySnackbar(text)
+
             // フォーム要素を空にする
             this.task = ""
-
             this.addDialog = false
+        },
+
+        //編集確認のダイアログ表示
+        editConfirm(id) {
+            console.log(id)
+            this.itemID = id
+            this.task = this.todos[id].comment
+            this.editDialog = true
+        },
+
+        //更新処理
+        doUpdate(id){
+            this.todos[id].comment = this.task
+            this.editDialog = false
+
+            const text = this.task + " のタスクに変更しました。"
+            this.displaySnackbar(text)
         },
  
         // 状態変更の処理
-        doChangeState: function(item){
+        doChangeState(item){
           item.state = !item.state ? 1 : 0
         },
 
         //削除確認のダイアログ表示
         deleteConfirm(id) {
             this.deleteDialog = true
-            this.deleteID = id
+            this.itemID = id
         },
 
-          // 削除の処理
+        //削除の処理
         doRemove(id){
             this.todos.splice(id, 1)
             this.deleteDialog = false
-            window.location.reload();
+            window.location.reload()
         },
+
+        // スナックバーの表示処理
+        displaySnackbar(text){
+            this.snackbar_text = text
+            this.snackbar = true
+        }
 
     }
   })
