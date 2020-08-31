@@ -22,28 +22,36 @@
 
             <div>
                 <!-- タスクの絞り込み -->
-                <label v-for="label in options">
-                    <input type="radio" v-model="current" v-bind:value="label.value">{{ label.label }}
-                </label>
-                <br>
-                <p>{{ computedTodos.length }} 件を表示中</p>
+                <v-col class="d-flex" cols="12" sm="6" style="width: 300px;">
+                    <v-select
+                        :items="options"
+                        name="label"
+                        v-model="current"
+                        item-text="label"
+                        v-bind:value="options.value"
+                        label="タスクの状態"
+                    >
+                        {{ options.label }}
+                    </v-select>
+                </v-col>
+                <p>　{{ computedTodos.length }} 件のタスクを表示中</p>
             </div>
 
             <!-- 新しいタスクを追加する -->
-            <div style="margin-bottom: 40px;">
-                <v-btn color = "teal lighten-4" @click ="addConfirm">新しいタスクを追加する</v-btn>
+            <div style="margin: 20px 0px 40px 0px;">
+                <v-btn color="teal lighten-4" @click="addConfirm">新しいタスクを追加する</v-btn>
                 <v-dialog v-model="addDialog" max-width="500">
                     <v-card>
                         <v-card-title class="headline">新しいタスクを追加</v-card-title>
                         <v-form ref="form" @submit.stop.prevent="doAdd">
                             <v-container>
                                 <v-text-field
-                                    v-model = "task"
+                                    v-model="task"
                                     :rules="rules"
                                     :counter="25"
                                     label="タスク名"
-                                    hint ="最大25文字入力できます。"
-                                    placeholder ="タスク名を入力してください。"
+                                    hint="最大25文字入力できます。"
+                                    placeholder="タスク名を入力してください。"
                                     autofocus
                                     @keyup.native.enter="task && submit(doAdd)"
                                 >
