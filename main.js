@@ -25,11 +25,12 @@ const app = new Vue({
         return{
             appName: 'ToDo LIST',
 
-            drawer: true,
-            drawer_menu: [
-                { title: 'Home', icon: 'mdi-home-city' },
-                { title: 'My Account', icon: 'mdi-account' },
-                { title: 'Users', icon: 'mdi-account-group-outline' },
+            drawer: null,
+
+            drawerItems: [
+                { icon: 'mdi-contacts', text: 'Contacts' },
+                { icon: 'mdi-history', text: 'Frequently contacted' },
+                { icon: 'mdi-content-copy', text: 'Duplicates' },
             ],
 
             // ダイアログ表示フラグ
@@ -54,11 +55,16 @@ const app = new Vue({
 
             // 選択している options の value を記憶するためのデータ
             // 初期値を「-1」つまり「すべて」にする
-            current: -1,
+            currentState: -1,
 
             task: '',
             editTask: '',
             rules: [v => v.length <= 25 || '入力可能な文字数は最大25文字までです。'],
+
+            // ページネーションの設定
+            currentPage: 1,
+            parPage: 5
+
         }
     },
 
@@ -72,10 +78,14 @@ const app = new Vue({
         todos: {
             // 引数はウォッチしているプロパティの変更後の値
             handler: function(todos){
-                todoStorage.save(todos)
+                todoStorage.save(todos);
             },
             // deep オプションでネストているデータも監視可能
             deep: true
+        },
+
+        currentState: function(){
+            this.currentPage = 1;
         }
     },
 
@@ -89,13 +99,24 @@ const app = new Vue({
             // {0: '作業中', 1: '完了', -1: 'すべて'}
         },
 
-        computedTodos: function(){
+        getTodos: function(){
             // データ current が -1 ならすべて
             // それ以外なら current と state が一致するものだけに絞り込む
             return this.todos.filter(function(el){
-                return this.current < 0 ? true : this.current === el.state
+                return this.currentState < 0 ? true : this.currentState === el.state
             }, this)
-        }
+        },
+
+        getLists: function(){
+            let current = this.currentPage * this.parPage;
+            let start = current - this.parPage;
+            return this.getTodos.slice(start,current);
+        },
+
+        getPageCount: function() {
+            return Math.ceil(this.getTodos.length / this.parPage);
+            console.log(currentPage)
+        },
     },
 
     methods: {
@@ -168,7 +189,7 @@ const app = new Vue({
         displaySnackbar(text){
             this.snackbar_text = text
             this.snackbar = true
-        }
+        },
 
     }
   })

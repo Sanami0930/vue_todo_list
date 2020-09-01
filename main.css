@@ -11,7 +11,6 @@
   }
   #app {
     max-width: auto;
-    /* max-width: 640px; */
     padding: 0 20px 0 20px;
     margin: 0 auto;
   }
@@ -29,13 +28,16 @@
     line-height: 40px;
   }
   thead th.id {
-    width: 50px;
+    width: 10%;
+  }
+  thead th.comment {
+    width: 50%;
   }
   thead th.state {
-    width: 100px;
+    width: 20%;
   }
   thead th.button {
-    width: 60px;
+    width: 20%;
   }
   tbody td.button, tbody td.state {
     text-align: center;
